@@ -121,7 +121,7 @@ def main():
             domains = ["@gmail.com", "@outlook.com", "@yahoo.com", "@hotmail.com"]
             characters = string.ascii_letters + string.digits
             username = str(''.join(random.choice(characters) for _ in range(12))).lower()
-            password = str(''.join(random.choice(string.ascii_letters) for _ in range(6)) + 'R@' + ''.join(random.choice(string.digits) for _ in range(3)))
+            password = str(''.join(random.choice(string.ascii_letters) for _ in range(6)) + 'Rc3@' + ''.join(random.choice(string.digits) for _ in range(3)))
             email = f"{username}{str(random.choice(domains))}"
             proxy_url = random.choice(proxy_list)
             captcha_token = get_token()
