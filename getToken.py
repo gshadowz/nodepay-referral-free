@@ -4,10 +4,6 @@ import random
 import string
 import time
 from colorama import init, Fore, Style
-try:
-    import requests
-except ImportError:
-    os.system('pip install requests')
 import requests
 
 #colorama init
@@ -107,21 +103,15 @@ def get_nodepay_token(email, password, captcha_token, proxy_url):
                 auth_token = get_tokens['token']
                 print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
                 with open('token_list.txt', 'w') as file:
-                    file.write(f"{email}:{auth_token}")
+                    file.write(f"{email}:{auth_token}\n")
                 return auth_token
             else:
-                msg = get_tokens['msg', 'error']
+                msg = get_tokens['msg']
                 print(f"{Fore.RED}Login Failed: {msg}, retrying {max_retry - i}{Style.RESET_ALL}")
-                return None
-            
-            if i == max_retry - 1:
-                print(f"{Fore.RED}Failed to get Nodepay Token after {max_retry} retries{Style.RESET_ALL}")
-                return None
-
         except Exception as e:
             print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
-            return None
 
+    print(f"{Fore.RED}Failed to get Nodepay Token after {max_retry} retries{Style.RESET_ALL}")
     return None
     
 

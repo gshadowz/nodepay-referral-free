@@ -1,15 +1,34 @@
-### ⚙️&nbsp; Instaction
-<img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-2.svg"> 
+# Nodepay Referral Free (Termux only)
+![nodepay-banner](img/nodepay.png)
 
-```
-git clone --depth=1 https://github.com/nbprg/nodepay-referral
-```
-```
-cd nodepay-referral
-```
-```
-pip install -r requirements.txt
-```
+
+# [Register Nodepay Here](https://app.nodepay.ai/register?ref=1XsOOpCNsHejnuP)
+
+# Requirements
+- Git
+    ```bash
+    pkg install git
+    ```
+
+- Python
+    ```bash
+    pkg install python
+    ```
+
+# How to Use
+- Clone this Repository
+    ```bash
+    git clone https://github.com/gshadowz/nodepay-referral-free.git
+    cd nodepay-referral-free
+    ```
+
+- Install the requirements
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+- Copy and Paste the JS Script in [Important Step](#important-step) to the Via Browser with picture below
+
 ⚠️ Open Via Browser And Run Captcha Solver for get captcha token
 ```
 python app.py
@@ -18,15 +37,9 @@ python app.py
 ```
 python script.py
 ```
-🌟 Full Tutorial In YouTube Channel : <a href="https://m.youtube.com/@nbprg">Click Here</a>
 
-
-<h3>Developer Info </h3>
-✉️ Contact With Me  : <a href="https://t.me/@TataCuto">@TataCuto</a> <br>
-🔊 Telegram Channel : <a href="https://t.me/@cryp2xyz">@cryp2xyz</a> <br>
-🎯 YouTube Channel  : <a href="https://m.youtube.com/@nbprg">Noob Programmer</a> <br>
-
-### ⚙️&nbsp; Captcha Solver JavaScript / use via 
+# Important Step
+### Captcha Solver JavaScript / use via 
 
 ```javascript
 
@@ -103,4 +116,3 @@ python script.py
 })();
 
 ```
-<img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-2.svg">
