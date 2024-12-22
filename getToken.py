@@ -91,55 +91,75 @@ def login_accounts(email, password, captcha_token, proxy_url):
         linex()
         time.sleep(1)
 
-def get_nodepay_token(email, password, captcha_token, proxy_url):
-    max_retry = 5;
-    for i in range(max_retry):
-        try:
-            print(f"{Fore.GREEN}Getting Nodepay Token within {max_retry - i}{Style.RESET_ALL}")
+# def get_nodepay_token(email, password, captcha_token, proxy_url):
+#     max_retry = 5;
+#     for i in range(max_retry):
+#         try:
+#             print(f"{Fore.GREEN}Getting Nodepay Token within {max_retry - i}{Style.RESET_ALL}")
 
-            get_tokens = login_accounts(email, password, captcha_token, proxy_url)
+#             get_tokens = login_accounts(email, password, captcha_token, proxy_url)
 
-            if get_tokens['msg'] == 'Success':
-                auth_token = get_tokens['token']
-                print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
-                with open('token_list.txt', 'w') as file:
-                    file.write(f"{email}:{auth_token}\n")
-                return auth_token
-            else:
-                msg = get_tokens['msg']
-                print(f"{Fore.RED}Login Failed: {msg}, retrying {max_retry - i}{Style.RESET_ALL}")
-        except Exception as e:
-            print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
+#             if get_tokens['msg'] == 'Success':
+#                 auth_token = get_tokens['token']
+#                 print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
+#                 with open('token_list.txt', 'w') as file:
+#                     file.write(f"{email}:{auth_token}\n")
+#                 return auth_token
+#             else:
+#                 msg = get_tokens['msg']
+#                 print(f"{Fore.RED}Login Failed: {msg}, retrying {max_retry - i}{Style.RESET_ALL}")
+#         except Exception as e:
+#             print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
 
-    print(f"{Fore.RED}Failed to get Nodepay Token after {max_retry} retries{Style.RESET_ALL}")
-    return None
+#     print(f"{Fore.RED}Failed to get Nodepay Token after {max_retry} retries{Style.RESET_ALL}")
+#     return None
     
+
+def read_credentials(file_path):
+   credentials = []
+   try:
+       with open(file_path, 'r') as file:
+           for line in file:
+               line = line.strip()  # Menghapus whitespace
+               if line:  # Pastikan baris tidak kosong
+                   parts = line.split('|')
+                   if len(parts) == 2:  # Pastikan ada dua elemen
+                       email, password = parts
+                       credentials.append((email, password))  # Menyimpan sebagai tuple
+                   else:
+                       print(f'Invalid line format: {line}')  # Menangani format yang salah
+   except Exception as e:
+       print(f'Error reading file: {str(e)}')
+   return credentials
 
 # Main function for processing full action
 def main():
     clear_screen()
-    try: 
-        captcha_token = get_token()
-    except Exception as e:
-        print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
-        linex()
-        time.sleep(1)
-        return
-    
-    with open('accounts.txt', 'r') as file:
-        accounts = file.read().splitlines('|')
-    
-    if not accounts:
+    credentials = read_credentials('accounts.txt')
+    if not credentials:
         print(f"{Fore.RED}No accounts found in accounts.txt{Style.RESET_ALL}")
         linex()
         time.sleep(1)
-        return
-    
-    for account in accounts:
-        email, password = account.strip().split(':')
+        return None
+
+    print(f"{Fore.GREEN}Accounts found in accounts.txt{Style.RESET_ALL}")
+    linex()
+
+    for email, password in credentials:
+        print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
+
+        captcha_token = get_token()
         proxy_url = random.choice(proxy_list)
-        get_nodepay_token(email, password, captcha_token, proxy_url)
-        
+        response = login_accounts(email, password, captcha_token, proxy_url)
+
+        if response and response.get('msg') == 'Success':
+            auth_token = response['data']['token']
+            print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
+            with open('token_list.txt', 'a') as file:
+                file.write(f"{auth_token}\n")
+        else:
+            print(f"{Fore.RED}Login Failed: {response['msg']}{Style.RESET_ALL}")
     
     # try:
     #     ref_limit = int(input('\033[0m>>\033[1;32m Put Your Referral Amount: '))
