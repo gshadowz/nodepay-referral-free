@@ -26,7 +26,7 @@ logo = """
 
 # Line Function 
 def linex():
-    print(f"{Fore.LIGHTWHITE_EX}========================================================={Style.RESET_ALL}"))
+    print(f"{Fore.LIGHTWHITE_EX}========================================================={Style.RESET_ALL}")
 
 # Get Captcha token 
 def get_token():
