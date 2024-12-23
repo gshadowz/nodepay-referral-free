@@ -10,6 +10,7 @@ import requests
 init(autoreset=True)
 
 #declare variable
+PROXY_FILE = 'proxy.txt'
 TOKEN_FILE = 'token_list.txt'
 ACCOUNT_FILE = 'accounts.txt'
 FAILED_ACCOUNTS_FILE = 'failed_accounts.txt'
@@ -37,22 +38,34 @@ def get_token():
         else:
             time.sleep(0.5)
 # Read and Write to TXT
+def read_proxy(file_path):
+    proxies = []
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()  
+                if line:  
+                    proxies.append(line)  
+    except Exception as e:
+        print(f'{Fore.LIGHTRED_EX}Error reading file: {str(e)}{Style.RESET_ALL}')
+    return proxies
 def read_credentials(file_path):
-   credentials = []
-   try:
-       with open(file_path, 'r') as file:
-           for line in file:
-               line = line.strip()  
-               if line:  
-                   parts = line.split('|')
-                   if len(parts) == 2:  
-                       email, password = parts
-                       credentials.append((email, password))
-                   else:
-                       print(f'Invalid line format: {line}')
-   except Exception as e:
-       print(f'Error reading file: {str(e)}')
-   return credentials
+    credentials = []
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()  
+            if line:  
+                parts = line.split('|')
+                if len(parts) == 2:  
+                    email, password = parts
+                    credentials.append((email, password))
+                else:
+                    print(f'Invalid line format: {line}')
+    except Exception as e:
+        print(f'Error reading file: {str(e)}')
+    return credentials
+
 def write_token(token):
     with open(TOKEN_FILE, 'a') as file:
         file.write(f"{token} \n")
@@ -72,11 +85,11 @@ def clear_screen():
         print(f"{Fore.CYAN}{logo}{Style.RESET_ALL}")
 
 def get_ip(proxy_url):
-     proxy = {'http': proxy_url,'https': proxy_url}
-     try:
-         response = requests.get('http://ip-api.com/json',proxies=proxy)
-         return response.json()['query']
-     except Exception as e:
+    proxy = {'http': proxy_url,'https': proxy_url}
+    try:
+        response = requests.get('http://ip-api.com/json',proxies=proxy)
+        return response.json()['query']
+    except Exception as e:
         print(f"{Fore.LIGHTRED_EX}Error: {str(e)}{Style.RESET_ALL}")
         return None
 
@@ -119,7 +132,7 @@ def handle_logins(credentials):
         print(f"{Fore.YELLOW}Password: {password} {Style.RESET_ALL}")
 
         captcha_token = get_token()
-        proxy_url = None
+        proxy_url = random.choice(read_proxy(PROXY_FILE))
         response_data = login_accounts(email, password, captcha_token, proxy_url)
 
         if response_data and response_data.get('msg') == 'Success':
