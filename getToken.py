@@ -150,16 +150,16 @@ def main():
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
         captcha_token = get_token()
-        proxy_url = random.choice(proxy_list)
-        response = login_accounts(email, password, captcha_token, proxy_url)
-
-        if response and response.get('msg') == 'Success':
-            auth_token = response['data']['token']
-            print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
-            with open('token_list.txt', 'a') as file:
-                file.write(f"{auth_token}\n")
+        print(f"Captcha Token: {captcha_token}")
+        proxy_url = None
+        response_data = login_accounts(email, password, captcha_token, proxy_url)
+        
+        if response_data and response_data.get('msg') == 'Success':
+            auth_token = response_data['data']['token']
+            print(f"{Fore.GREEN}Login Successful! Auth Token: {auth_token}{Style.RESET_ALL}")
         else:
-            print(f"{Fore.RED}Login Failed: {response['msg']}{Style.RESET_ALL}")
+            print(f"{Fore.RED}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
+            print(f"Response Data: {response_data}")
     
     # try:
     #     ref_limit = int(input('\033[0m>>\033[1;32m Put Your Referral Amount: '))
