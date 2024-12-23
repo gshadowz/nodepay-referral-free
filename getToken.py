@@ -175,7 +175,7 @@ def main():
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
         captcha_token = get_token()
-        proxy_url = random.choice(read_proxy(PROXY_FILE))
+        proxy_url = random.choice(read_proxy(get_ip(PROXY_FILE)))
 
         print(f"{Fore.WHITE}Captcha Token: {captcha_token}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}Proxy: {proxy_url}{Style.RESET_ALL}")
