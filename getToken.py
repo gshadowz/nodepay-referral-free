@@ -130,8 +130,7 @@ def write_token(token):
     
     # Write token into file
     with open(TOKEN_FILE, 'a') as file:
-        for token in token:
-            file.write(token + '\n')
+        file.write(token + '\n')
 
 # Main function for processing full action
 def main():
@@ -158,7 +157,6 @@ def main():
             auth_token = response_data['data']['token']
             print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
             linex()
-            print(f"{Fore.GREEN}Token saved into token_list.txt{Style.RESET_ALL}")
             write_token(auth_token)
         else:
             print(f"{Fore.RED}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
@@ -216,5 +214,7 @@ def main():
     #         time.sleep(1)
     # print('\r\r\033[0m>>\033[1;32m Your Referral Completed \033[0m')
     exit()
+
+print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
 
 main()
