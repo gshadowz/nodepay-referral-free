@@ -135,7 +135,7 @@ def main():
     failed_logins = []
 
     if os.path.exists(TOKEN_FILE):
-        print(f"{Fore.LIGHTYELLOW_EX}Detected token_list.txt, will be deleted for new token{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTYELLOW_EX}Detected {TOKEN_FILE} in current directory, will be deleted for new token{Style.RESET_ALL}")
         os.remove(TOKEN_FILE)
         linex()
     
@@ -147,8 +147,6 @@ def main():
 
     for index, (email, password) in enumerate(credentials, start=1):
         print(f"Processing account: {email}, Total Account: {index}/{len(credentials)}")
-        print(f"{Fore.LIGHTGREEN_EX}Email: {email}{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTGREEN_EX}Password: {password}{Style.RESET_ALL}")
 
         captcha_token = get_token()
         proxy_url = None
@@ -157,7 +155,7 @@ def main():
         
         if response_data and response_data.get('msg') == 'Success':
             auth_token = response_data['data']['token']
-            print(f"{Fore.LIGHTGREEN_EX}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}Login Successful! Auth Token: {auth_token}{Style.RESET_ALL}")
             linex()
             write_token(auth_token)
         else:
@@ -168,6 +166,7 @@ def main():
 
     if failed_logins:        
         print(f"{Fore.LIGHTRED_EX}Saving Failed logins creds into {FAILED_ACCOUNTS_FILE}{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTRED_EX}Run it again by typing {FAILED_ACCOUNTS_FILE} when restarting the script.{Style.RESET_ALL}")
         write_failed_accounts(failed_logins)
     
     
