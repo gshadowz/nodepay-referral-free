@@ -152,10 +152,15 @@ def main():
     proxy = read_proxy(PROXY_FILE)
     success = 0
     fail = 0
+    clear_screen()
+
+    if os.path.exists(TOKEN_FILE):
+        print(f"{Fore.LIGHTYELLOW_EX}Detected {TOKEN_FILE} in current directory, will be deleted for new token{Style.RESET_ALL}")
+        os.remove(TOKEN_FILE)
+        linex()
 
     ref_amount = int(input(f'{Fore.LIGHTCYAN_EX}>> Input Your Reff Amount: {Style.RESET_ALL}'))
     ref_code = input(f'{Fore.LIGHTCYAN_EX}>> Input Your Referral Code: {Style.RESET_ALL}')
-    clear_screen()
 
     if ref_amount < 0 or ref_amount == 0:
         print(f"{Fore.LIGHTRED_EX}Error: Value Must Be Greater Than 0!{Style.RESET_ALL}")
@@ -180,26 +185,23 @@ def main():
             response = register_accounts(email, password, username, ref_code, proxy_url, captcha_token)
 
             if response['msg'] == 'Success':
-                print(f"{Fore.LIGHTGREEN_EX}Register Success!{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}Register {email} Success!{Style.RESET_ALL}")
 
                 captcha_token = get_token()
 
                 response = login_accounts(email, password, captcha_token, proxy_url)
 
                 if response['msg'] == 'Success':
-                    print(f"{Fore.LIGHTGREEN_EX}Login Success!{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTGREEN_EX}Login into {email} Success!{Style.RESET_ALL}")
                     auth_token = response['data']['token']
                     response = activate_account(auth_token,proxy_url)
 
                     if response['msg'] == 'Success':
                         print(f"{Fore.LIGHTGREEN_EX}Referral Success!{Style.RESET_ALL}")
-                        success += 1
-
-                        print(f"{Fore.LIGHTGREEN_EX}Account Credentials is Saved into {ACCOUNTS_FILE}{Style.RESET_ALL}")
                         write_credentials([(email, password)])
-
-                        print(f"{Fore.LIGHTGREEN_EX}Account Token is Saved into {TOKEN_FILE}{Style.RESET_ALL}")
                         write_token(auth_token)
+                        success += 1
+                        linex()
                     else:
                         print(f"{Fore.LIGHTRED_EX}Error: {response['msg']}{Style.RESET_ALL}")
                         fail += 1
@@ -219,6 +221,10 @@ def main():
             linex()
 
     print(f"{Fore.LIGHTGREEN_EX}Referral Completed!{Style.RESET_ALL}\n")
+
+    print(f"{Fore.LIGHTGREEN_EX}All Account Credentials is Saved into {ACCOUNTS_FILE}{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTGREEN_EX}All Account Token is Saved into {TOKEN_FILE}\n{Style.RESET_ALL}")
+
     print(f"{Fore.LIGHTGREEN_EX}Total Success: {success}{Style.RESET_ALL}")
     print(f"{Fore.LIGHTRED_EX}Total Failed: {fail}{Style.RESET_ALL}")
     exit()
