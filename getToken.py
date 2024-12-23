@@ -9,24 +9,24 @@ import requests
 #colorama init
 init(autoreset=True)
 
+#declare variable
+PROXY_FILE = 'proxy.txt'
+TOKEN_FILE = 'token_list.txt'
+ACCOUNT_FILE = 'accounts.txt'
+FAILED_ACCOUNTS_FILE = 'failed_accounts.txt'
+
 # Logo For script 
 logo = """
- __  __              __                                              ____               ___    ___                      ___      
-/\ \/\ \            /\ \                                            /\  _`\           /'___\ /'___\                    /\_ \     
-\ \ `\\ \    ___    \_\ \     __   _____      __     __  __         \ \ \L\ \     __ /\ \__//\ \__/   __   _ __    __  \//\ \    
- \ \ , ` \  / __`\  /'_` \  /'__`\/\ '__`\  /'__`\  /\ \/\ \  _______\ \ ,  /   /'__`\ \ ,__\ \ ,__\/'__`\/\`'__\/'__`\  \ \ \   
-  \ \ \`\ \/\ \L\ \/\ \L\ \/\  __/\ \ \L\ \/\ \L\.\_\ \ \_\ \/\______\\ \ \\ \ /\  __/\ \ \_/\ \ \_/\  __/\ \ \//\ \L\.\_ \_\ \_ 
-   \ \_\ \_\ \____/\ \___,_\ \____\\ \ ,__/\ \__/.\_\\/`____ \/______/ \ \_\ \_\ \____\\ \_\  \ \_\\ \____\\ \_\\ \__/.\_\/\____\
-    \/_/\/_/\/___/  \/__,_ /\/____/ \ \ \/  \/__/\/_/ `/___/> \         \/_/\/ /\/____/ \/_/   \/_/ \/____/ \/_/ \/__/\/_/\/____/
-                                     \ \_\               /\___/                                                                  
-                                      \/_/               \/__/                                                                   
+   _  __       __                      ___      ___                 __
+  / |/ ___ ___/ ___ ___ ___ ___ ______/ _ \___ / ____ ___________ _/ /
+ /    / _ / _  / -_/ _ / _ `/ // /___/ , _/ -_/ _/ -_/ __/ __/ _ `/ / 
+/_/|_/\___\_,_/\__/ .__\_,_/\_, /   /_/|_|\__/_/ \__/_/ /_/  \_,_/_/  
+                 /_/       /___/                                      
 """
-
-proxy_list = open('proxy.txt', 'r').read().splitlines()
 
 # Line Function 
 def linex():
-    print('\033[0m================================================')
+    print(f"{Fore.LIGHTWHITE_EX}========================================================={Style.RESET_ALL}"))
 
 # Get Captcha token 
 def get_token():
@@ -37,27 +37,51 @@ def get_token():
             return res
         else:
             time.sleep(0.5)
+# Read and Write to TXT
+def read_proxy(file_path):
+    proxies = []
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()  
+                if line:  
+                    proxies.append(line)  
+    except Exception as e:
+        print(f'{Fore.LIGHTRED_EX}Error reading file: {str(e)}{Style.RESET_ALL}')
+    return proxies
+def read_credentials(file_path):
+   credentials = []
+   try:
+       with open(file_path, 'r') as file:
+           for line in file:
+               line = line.strip()  
+               if line:  
+                   parts = line.split('|')
+                   if len(parts) == 2:  
+                       email, password = parts
+                       credentials.append((email, password))
+                   else:
+                       print(f'Invalid line format: {line}')
+   except Exception as e:
+       print(f'Error reading file: {str(e)}')
+   return credentials
+def write_token(token):
+    with open(TOKEN_FILE, 'a') as file:
+        file.write(f"{token} \n")
 
-# Clear terminal session & print logo
+def write_failed_accounts(failed_accounts):
+    with open(FAILED_ACCOUNTS_FILE, 'a') as file:
+        for account in failed_accounts:
+            file.write(f"{account} \n")
+
+# Main Function
 def clear_screen():
     if sys.platform.startswith('win'):
         os.system('cls')
-        print(logo)
+        print(f"{Fore.CYAN}{logo}{Style.RESET_ALL}")
     else:
         os.system('clear')
-        print(logo)
-
-# Get IP using proxy / not using for speed up
-def get_ip(proxy_url):
-    proxy = {'http': proxy_url, 'https': proxy_url}
-    try:
-        response = requests.get('http://ip-api.com/json', proxies=proxy)
-        return response.json()['query']
-    except Exception as e:
-        print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
-        return None
-
-# Get headers set / with `auth_token` or head only
+        print(f"{Fore.CYAN}{logo}{Style.RESET_ALL}")
 def get_headers(auth_token=None):
     headers = {
         'accept': '*/*',
@@ -70,8 +94,6 @@ def get_headers(auth_token=None):
         headers['Authorization'] = f'Bearer {auth_token}'
         headers['origin'] = 'chrome-extension://lgmpfmgeabnnlemejacfljbmonaomfmm'
     return headers
-
-# Login account and get authorization token
 def login_accounts(email, password, captcha_token, proxy_url):
     try:
         json_data = {
@@ -91,54 +113,47 @@ def login_accounts(email, password, captcha_token, proxy_url):
         linex()
         time.sleep(1)
 
-def read_proxy(file_path):
-    proxies = []
-    try:
-        with open(file_path, 'r') as file:
-            for line in file:
-                line = line.strip()  # Menghapus whitespace
-                if line:  # Pastikan baris tidak kosong
-                    proxies.append(line)  # Menyimpan sebagai tuple
-    except Exception as e:
-        print(f'Error reading file: {str(e)}')
-    return proxies
+def handle_logins(credentials):
+    failed_logins = []
 
-def read_credentials(file_path):
-   credentials = []
-   try:
-       with open(file_path, 'r') as file:
-           for line in file:
-               line = line.strip()  # Menghapus whitespace
-               if line:  # Pastikan baris tidak kosong
-                   parts = line.split('|')
-                   if len(parts) == 2:  # Pastikan ada dua elemen
-                       email, password = parts
-                       credentials.append((email, password))  # Menyimpan sebagai tuple
-                   else:
-                       print(f'Invalid line format: {line}')  # Menangani format yang salah
-   except Exception as e:
-       print(f'Error reading file: {str(e)}')
-   return credentials
+    for email, password in credentials:
+        print(f"{Fore.YELLOW}Email: {email} {Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}Password: {password} {Style.RESET_ALL}")
 
-def write_token(token):
-    TOKEN_FILE = 'token_list.txt'
+        captcha_token = get_token()
+        proxy_url = random.choice(read_proxy(PROXY_FILE))
+        response_data = login_accounts(email, password, captcha_token, proxy_url)
 
-    # Clear token_list.txt
-    # To make sure that new token always generated
-    if os.path.exists(TOKEN_FILE):
-        print(f"{Fore.YELLOW}Detected token_list.txt, will be cleared for new token{Style.RESET_ALL}")
-        os.remove(TOKEN_FILE)
-    
-    # Write token into file
-    with open(TOKEN_FILE, 'a') as file:
-        file.write(f"{token} \n")
+        if response_data and response_data.get('msg') == 'Success':
+            auth_token = response_data['data']['token']
+            print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
+            write_token(auth_token)
+            linex()
+        else:
+            print(f"{Fore.LIGHTRED_EX}Login failed for {email}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}Reason: {response_data.get('msg')}{Style.RESET_ALL}")
+            failed_logins.append(f"{email}|{password}")
+
+    return failed_logins
 
 # Main function for processing full action
 def main():
     clear_screen()
-    credentials = read_credentials('accounts.txt')
+
+    credentials = read_credentials(ACCOUNT_FILE)
+
+    if os.path.exists(FAILED_ACCOUNTS_FILE):
+        print(f"{Fore.YELLOW}Detected failed_accounts.txt, will be cleared for new failed account{Style.RESET_ALL}")
+        os.remove(FAILED_ACCOUNTS_FILE)
+        linex()
+
+    if os.path.exists(TOKEN_FILE):
+        print(f"{Fore.YELLOW}Detected token_list.txt, will be cleared for new token{Style.RESET_ALL}")
+        os.remove(TOKEN_FILE)
+        linex()
+    
     if not credentials:
-        print(f"{Fore.RED}No accounts found in accounts.txt{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTRED_EX}No accounts found in accounts.txt{Style.RESET_ALL}")
         linex()
         time.sleep(1)
         return None
@@ -146,76 +161,35 @@ def main():
     print(f"{Fore.GREEN}Accounts found in accounts.txt{Style.RESET_ALL}")
     linex()
 
-    for email, password in credentials:
-        print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
+    failed_logins = handle_logins(credentials)
 
-        captcha_token = get_token()
-        proxy_url = None
-        response_data = login_accounts(email, password, captcha_token, proxy_url)
+    if failed_logins:
+        print(f"{Fore.LIGHTYELLOW_EX}Saving Failed logins creds into failed_accounts.txt: {len(failed_logins)}{Style.RESET_ALL}")
+        linex()
+        write_failed_accounts(failed_logins)
+    else:
+        print(f"{Fore.GREEN}All logins successful.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
+        linex()
+
+    # for email, password in credentials:
+    #     print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
+    #     print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
+
+    #     captcha_token = get_token()
+    #     proxy_url = random.choice(read_proxy(PROXY_FILE))
+    #     response_data = login_accounts(email, password, captcha_token, proxy_url)
         
-        if response_data and response_data.get('msg') == 'Success':
-            auth_token = response_data['data']['token']
-            print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
-            linex()
-            write_token(auth_token)
-        else:
-            print(f"{Fore.RED}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
-            print(f"{Fore.RED}Response Data: {response_data}{Style.RESET_ALL}")
+    #     if response_data and response_data.get('msg') == 'Success':
+    #         auth_token = response_data['data']['token']
+    #         print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
+    #         linex()
+    #         write_token(auth_token)
+    #     else:
+    #         print(f"{Fore.LIGHTRED_EX}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
     
-    # try:
-    #     ref_limit = int(input('\033[0m>>\033[1;32m Put Your Referral Amount: '))
-    # except:
-    #     print('\033[1;32m⚠️ Input Wrong Default Referral Amount is 1k ')
-    #     ref_limit = 1000
-    #     time.sleep(1)
-    # ref_code = input("\033[0m>>\033[1;32m Input referral code : ")
-    # clear_screen()
-    # success_count = 0
-    # for atm in range(ref_limit):
-    #     try:
-    #         print(f'\r\r\033[0m>>\033[1;32m Processing  {str(success_count)}/{str(ref_limit)} complete : {((atm + 1) / ref_limit) * 100:.2f}% ')
-    #         domains = ["@gmail.com", "@outlook.com", "@yahoo.com", "@hotmail.com"]
-    #         characters = string.ascii_letters + string.digits
-    #         username = str(''.join(random.choice(characters) for _ in range(12))).lower()
-    #         password = str(''.join(random.choice(string.ascii_letters) for _ in range(6)) + 'Rc3@' + ''.join(random.choice(string.digits) for _ in range(3)))
-    #         email = f"{username}{str(random.choice(domains))}"
-    #         proxy_url = random.choice(proxy_list)
-    #         captcha_token = get_token()
-    #         response_data = reg_account(email, password, username, ref_code, proxy_url, captcha_token)
-    #         if response_data['msg'] == 'Success':
-    #             print(f'\r\r\033[0m>>\033[1;32m Account Created Successfully \033[0m')
-    #             captcha_token = get_token()
-    #             response_data = login_accounts(email, password, captcha_token, proxy_url)
-    #             if response_data['msg'] == 'Success':
-    #                 print(f'\r\r\033[0m>>\033[1;32m Account Login Successfully \033[0m')
-    #                 auth_token = response_data['data']['token']
-    #                 response_data = activate_recent_account(auth_token, proxy_url)
-    #                 if response_data['msg'] == 'Success':
-    #                     print(f'\r\r\033[0m>>\033[1;32m Successfully Referral Done \033[0m')
-    #                     success_count += 1
-    #                     open('accounts.txt', 'a').write(f"{str(email)}|{str(password)}|{str(auth_token)}\n")
-    #                     time.sleep(1)
-    #                 else:
-    #                     print(f'\r\r\033[1;31m🌲 Referral Error, Not Success \033[0m {response_data["msg"]}')
-    #                     time.sleep(1)
-    #                     linex()
-    #             else:
-    #                 print(f'\r\r\033[1;31m🌲 Account Login Failed \033[0m {response_data["msg"]}')
-    #                 time.sleep(1)
-    #                 linex()
-    #         else:
-    #             print(f'\r\r\033[1;31m🌲 Account Creation Failed \033[0m {response_data["msg"]}')
-    #             time.sleep(1)
-    #             linex()
-    #         linex()
-    #     except Exception as e:
-    #         print(f'\r\r\033[31m⚠️ Error: {str(e)} \033[0m')
-    #         linex()
-    #         time.sleep(1)
-    # print('\r\r\033[0m>>\033[1;32m Your Referral Completed \033[0m')
     exit()
 
-print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
+if __name__ == "__main__":
+    main()
 
-main()
