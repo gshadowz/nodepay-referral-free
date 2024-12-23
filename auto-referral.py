@@ -61,7 +61,7 @@ def write_credentials(credentials):
             file.write(f"{email}|{password}\n")
 
 def write_token(token):
-    with open(TOKEN_FILE, 'w') as file:
+    with open(TOKEN_FILE, 'a') as file:
         file.write(f"{token}\n")
 
 def get_ip(proxy_url):
