@@ -5,6 +5,8 @@ import string
 import time
 from colorama import init, Fore, Style
 import requests
+from prompt_toolkit import prompt
+from prompt_toolkit.shortcuts import button_dialog
 
 #colorama init
 init(autoreset=True)
@@ -55,27 +57,23 @@ def read_credentials(file_path):
         with open(file_path, 'r') as file:
             for line in file:
                 line = line.strip()  # Menghapus whitespace
-                print(f"Read line: '{line}'")  # Debug: cetak setiap baris yang dibaca
                 if line:  # Pastikan baris tidak kosong
                     parts = line.split('|')
-                    print(f"Parts: {parts}")  # Debug: cetak bagian yang dipisahkan
                     if len(parts) == 2:  # Pastikan ada dua elemen
                         email, password = parts
                         credentials.append((email, password))  # Menyimpan sebagai tuple
-                        print(f"Added credentials: {email}, {password}")  # Debug: cetak kredensial yang ditambahkan
                     else:
                         print(f'Invalid line format: {line}')  # Menangani format yang salah
     except Exception as e:
         print(f'Error reading file: {str(e)}')
-    print(f"Total credentials read: {len(credentials)}")  # Debug: cetak total kredensial yang dibaca
     return credentials
 
 def write_token(token):
-    with open(TOKEN_FILE, 'a') as file:
+    with open(TOKEN_FILE, 'w') as file:
         file.write(f"{token} \n")
 
 def write_failed_accounts(failed_accounts):
-    with open(FAILED_ACCOUNTS_FILE, 'a') as file:
+    with open(FAILED_ACCOUNTS_FILE, 'w') as file:
         for account in failed_accounts:
             file.write(f"{account} \n")
 
@@ -132,13 +130,28 @@ def login_accounts(email, password, captcha_token, proxy_url):
 def main():
     clear_screen()
 
-    credentials = read_credentials(ACCOUNTS_FILE)
-    failed_logins = []
+    result = button_dialog(
+        title="Nodepay Token Getter",
+        text="Select accounts or failed accounts.txt",
+        buttons=[
+            ("Accounts", "accounts.txt"),
+            ("Failed Account", "failed_accounts.txt"),
+            ("Exit", "exit")
+        ]
+    )
 
-    if os.path.exists(FAILED_ACCOUNTS_FILE):
-        print(f"{Fore.YELLOW}Detected failed_accounts.txt, will be cleared for new failed account{Style.RESET_ALL}")
-        os.remove(FAILED_ACCOUNTS_FILE)
-        linex()
+    if result == "exit":
+        print(f"{Fore.LIGHTRED_EX}Exiting...{Style.RESET_ALL}")
+        exit()
+
+    if result == "accounts.txt":
+        result = ACCOUNTS_FILE
+    
+    if result == "failed_accounts.txt":
+        result = FAILED_ACCOUNTS_FILE
+
+    credentials = read_credentials(result)
+    failed_logins = []
 
     if os.path.exists(TOKEN_FILE):
         print(f"{Fore.YELLOW}Detected token_list.txt, will be cleared for new token{Style.RESET_ALL}")
