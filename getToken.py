@@ -61,9 +61,9 @@ def read_credentials(file_path):
                     email, password = parts
                     credentials.append((email, password))
                 else:
-                    print(f'Invalid line format: {line}')
+                    print(f'{Fore.LIGHTRED_EX}Invalid line format: {line}{Style.RESET_ALL}')
     except Exception as e:
-        print(f'Error reading file: {str(e)}')
+        print(f'{Fore.LIGHTRED_EX}Error reading file: {str(e)}{Style.RESET_ALL}')
     return credentials
 
 def write_token(token):
@@ -152,6 +152,7 @@ def main():
     clear_screen()
 
     credentials = read_credentials(ACCOUNT_FILE)
+    failed_logins = []
 
     if os.path.exists(FAILED_ACCOUNTS_FILE):
         print(f"{Fore.YELLOW}Detected failed_accounts.txt, will be cleared for new failed account{Style.RESET_ALL}")
@@ -169,36 +170,34 @@ def main():
         time.sleep(1)
         return None
 
-    print(f"{Fore.GREEN}Accounts found in accounts.txt{Style.RESET_ALL}")
-    linex()
+    for email, password in credentials:
+        print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
-    failed_logins = handle_logins(credentials)
+        captcha_token = get_token()
+        proxy_url = random.choice(read_proxy(PROXY_FILE))
 
-    if failed_logins:
-        print(f"{Fore.LIGHTYELLOW_EX}Saving Failed logins creds into failed_accounts.txt: {len(failed_logins)}{Style.RESET_ALL}")
-        linex()
-        write_failed_accounts(failed_logins)
-    else:
-        print(f"{Fore.GREEN}All logins successful.{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
-        linex()
+        print(f"{Fore.WHITE}Captcha Token: {captcha_token}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}Proxy: {proxy_url}{Style.RESET_ALL}")
 
-    # for email, password in credentials:
-    #     print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
-    #     print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
-
-    #     captcha_token = get_token()
-    #     proxy_url = random.choice(read_proxy(PROXY_FILE))
-    #     response_data = login_accounts(email, password, captcha_token, proxy_url)
+        response_data = login_accounts(email, password, captcha_token, proxy_url)
         
-    #     if response_data and response_data.get('msg') == 'Success':
-    #         auth_token = response_data['data']['token']
-    #         print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
-    #         linex()
-    #         write_token(auth_token)
-    #     else:
-    #         print(f"{Fore.LIGHTRED_EX}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
+        if response_data and response_data.get('msg') == 'Success':
+            auth_token = response_data['data']['token']
+            print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
+            linex()
+            write_token(auth_token)
+        else:
+            print(f"{Fore.LIGHTRED_EX}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
+            linex()
+            failed_logins.append(f"{email}|{password}")
+
+    if failed_logins:        
+        print(f"{Fore.LIGHTRED_EX}Saving Failed logins creds into failed_accounts.txt: {len(failed_logins)}{Style.RESET_ALL}")
+        write_failed_accounts(failed_logins)
     
+    
+    print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
     exit()
 
 if __name__ == "__main__":
