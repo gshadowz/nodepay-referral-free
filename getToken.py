@@ -175,7 +175,7 @@ def main():
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
         captcha_token = get_token()
-        proxy_url = random.choice(read_proxy(get_ip(PROXY_FILE)))
+        proxy_url = None
 
         print(f"{Fore.WHITE}Captcha Token: {captcha_token}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}Proxy: {proxy_url}{Style.RESET_ALL}")
@@ -199,7 +199,7 @@ def main():
     
     print(f"{Fore.GREEN}Token has been saved into token_list.txt{Style.RESET_ALL}")
     exit()
-
+    
 if __name__ == "__main__":
     main()
 
