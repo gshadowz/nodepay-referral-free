@@ -148,7 +148,7 @@ def main():
         return None
 
     for email, password in credentials:
-        print(f"Processing account: {email}")
+        print(f"Processing account: {email}, length: {len(credentials)}")
         print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
