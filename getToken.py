@@ -82,6 +82,16 @@ def clear_screen():
     else:
         os.system('clear')
         print(f"{Fore.CYAN}{logo}{Style.RESET_ALL}")
+
+def get_ip(proxy_url):
+     proxy = {'http': proxy_url,'https': proxy_url}
+     try:
+         response = requests.get('http://ip-api.com/json',proxies=proxy)
+         return response.json()['query']
+     except Exception as e:
+        print(f"{Fore.LIGHTRED_EX}Error: {str(e)}{Style.RESET_ALL}")
+        return None
+
 def get_headers(auth_token=None):
     headers = {
         'accept': '*/*',
