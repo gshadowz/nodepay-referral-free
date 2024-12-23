@@ -54,16 +54,20 @@ def read_credentials(file_path):
     try:
         with open(file_path, 'r') as file:
             for line in file:
-                line = line.strip()  
-            if line:  
-                parts = line.split('|')
-                if len(parts) == 2:  
-                    email, password = parts
-                    credentials.append((email, password))
-                else:
-                    print(f'{Fore.LIGHTRED_EX}Invalid line format: {line}{Style.RESET_ALL}')
+                line = line.strip()  # Menghapus whitespace
+                print(f"Read line: '{line}'")  # Debug: cetak setiap baris yang dibaca
+                if line:  # Pastikan baris tidak kosong
+                    parts = line.split('|')
+                    print(f"Parts: {parts}")  # Debug: cetak bagian yang dipisahkan
+                    if len(parts) == 2:  # Pastikan ada dua elemen
+                        email, password = parts
+                        credentials.append((email, password))  # Menyimpan sebagai tuple
+                        print(f"Added credentials: {email}, {password}")  # Debug: cetak kredensial yang ditambahkan
+                    else:
+                        print(f'Invalid line format: {line}')  # Menangani format yang salah
     except Exception as e:
-        print(f'{Fore.LIGHTRED_EX}Error reading file: {str(e)}{Style.RESET_ALL}')
+        print(f'Error reading file: {str(e)}')
+    print(f"Total credentials read: {len(credentials)}")  # Debug: cetak total kredensial yang dibaca
     return credentials
 
 def write_token(token):
