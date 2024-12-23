@@ -129,7 +129,7 @@ def write_token(token):
         os.remove(TOKEN_FILE)
     
     # Write token into file
-    with open(TOKEN_FILE, 'w') as file:
+    with open(TOKEN_FILE, 'a') as file:
         for token in token:
             file.write(token + '\n')
 
@@ -156,7 +156,9 @@ def main():
         
         if response_data and response_data.get('msg') == 'Success':
             auth_token = response_data['data']['token']
-            print(f"{Fore.GREEN}Login Successful! Auth Token: {auth_token}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
+            linex()
+            print(f"{Fore.GREEN}Token saved into token_list.txt{Style.RESET_ALL}")
             write_token(auth_token)
         else:
             print(f"{Fore.RED}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
