@@ -10,7 +10,6 @@ import requests
 init(autoreset=True)
 
 #declare variable
-PROXY_FILE = 'proxy.txt'
 TOKEN_FILE = 'token_list.txt'
 ACCOUNT_FILE = 'accounts.txt'
 FAILED_ACCOUNTS_FILE = 'failed_accounts.txt'
@@ -38,17 +37,6 @@ def get_token():
         else:
             time.sleep(0.5)
 # Read and Write to TXT
-def read_proxy(file_path):
-    proxies = []
-    try:
-        with open(file_path, 'r') as file:
-            for line in file:
-                line = line.strip()  
-                if line:  
-                    proxies.append(line)  
-    except Exception as e:
-        print(f'{Fore.LIGHTRED_EX}Error reading file: {str(e)}{Style.RESET_ALL}')
-    return proxies
 def read_credentials(file_path):
    credentials = []
    try:
@@ -131,7 +119,7 @@ def handle_logins(credentials):
         print(f"{Fore.YELLOW}Password: {password} {Style.RESET_ALL}")
 
         captcha_token = get_token()
-        proxy_url = random.choice(read_proxy(PROXY_FILE))
+        proxy_url = None
         response_data = login_accounts(email, password, captcha_token, proxy_url)
 
         if response_data and response_data.get('msg') == 'Success':
