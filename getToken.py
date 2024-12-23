@@ -91,29 +91,17 @@ def login_accounts(email, password, captcha_token, proxy_url):
         linex()
         time.sleep(1)
 
-# def get_nodepay_token(email, password, captcha_token, proxy_url):
-#     max_retry = 5;
-#     for i in range(max_retry):
-#         try:
-#             print(f"{Fore.GREEN}Getting Nodepay Token within {max_retry - i}{Style.RESET_ALL}")
-
-#             get_tokens = login_accounts(email, password, captcha_token, proxy_url)
-
-#             if get_tokens['msg'] == 'Success':
-#                 auth_token = get_tokens['token']
-#                 print(f"{Fore.GREEN}Login Success, Auth Token: {auth_token}{Style.RESET_ALL}")
-#                 with open('token_list.txt', 'w') as file:
-#                     file.write(f"{email}:{auth_token}\n")
-#                 return auth_token
-#             else:
-#                 msg = get_tokens['msg']
-#                 print(f"{Fore.RED}Login Failed: {msg}, retrying {max_retry - i}{Style.RESET_ALL}")
-#         except Exception as e:
-#             print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
-
-#     print(f"{Fore.RED}Failed to get Nodepay Token after {max_retry} retries{Style.RESET_ALL}")
-#     return None
-    
+def read_proxy(file_path):
+    proxies = []
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()  # Menghapus whitespace
+                if line:  # Pastikan baris tidak kosong
+                    proxies.append(line)  # Menyimpan sebagai tuple
+    except Exception as e:
+        print(f'Error reading file: {str(e)}')
+    return proxies
 
 def read_credentials(file_path):
    credentials = []
@@ -131,6 +119,19 @@ def read_credentials(file_path):
    except Exception as e:
        print(f'Error reading file: {str(e)}')
    return credentials
+
+def write_token(token):
+    TOKEN_FILE = 'token_list.txt'
+
+    # Clear token_list.txt
+    # To make sure that new token always generated
+    if os.path.exists(TOKEN_FILE):
+        os.remove(TOKEN_FILE)
+    
+    # Write token into file
+    with open(TOKEN_FILE, 'w') as file:
+        for token in token:
+            file.write(token + '\n')
 
 # Main function for processing full action
 def main():
@@ -150,16 +151,16 @@ def main():
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
         captcha_token = get_token()
-        print(f"Captcha Token: {captcha_token}")
         proxy_url = None
         response_data = login_accounts(email, password, captcha_token, proxy_url)
         
         if response_data and response_data.get('msg') == 'Success':
             auth_token = response_data['data']['token']
             print(f"{Fore.GREEN}Login Successful! Auth Token: {auth_token}{Style.RESET_ALL}")
+            write_token(auth_token)
         else:
             print(f"{Fore.RED}Login Failed: {response_data.get('msg', 'Unknown error')}{Style.RESET_ALL}")
-            print(f"Response Data: {response_data}")
+            print(f"{Fore.RED}Response Data: {response_data}{Style.RESET_ALL}")
     
     # try:
     #     ref_limit = int(input('\033[0m>>\033[1;32m Put Your Referral Amount: '))
