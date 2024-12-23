@@ -23,7 +23,7 @@ logo = r"""
 
 def linex():
     print(f"{Fore.LIGHTWHITE_EX}========================================================={Style.RESET_ALL}")
-    
+
 def clear_screen():
     if sys.platform.startswith('win'):
         os.system('cls')
@@ -74,7 +74,7 @@ def read_credentials(file_path):
     return credentials
 
 def write_token(token):
-    with open(TOKEN_FILE, 'w') as file:
+    with open(TOKEN_FILE, 'a') as file:
         file.write(f"{token}\n")
 
 def write_failed_accounts(failed_accounts):
