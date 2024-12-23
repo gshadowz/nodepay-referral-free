@@ -126,11 +126,12 @@ def write_token(token):
     # Clear token_list.txt
     # To make sure that new token always generated
     if os.path.exists(TOKEN_FILE):
+        print(f"{Fore.YELLOW}Detected token_list.txt, will be cleared for new token{Style.RESET_ALL}")
         os.remove(TOKEN_FILE)
     
     # Write token into file
     with open(TOKEN_FILE, 'a') as file:
-        file.write(token + '\n')
+        file.write(f"{token} \n")
 
 # Main function for processing full action
 def main():
