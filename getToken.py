@@ -12,7 +12,7 @@ init(autoreset=True)
 #declare variable
 PROXY_FILE = 'proxy.txt'
 TOKEN_FILE = 'token_list.txt'
-ACCOUNT_FILE = 'accounts.txt'
+ACCOUNTS_FILE = 'accounts.txt'
 FAILED_ACCOUNTS_FILE = 'failed_accounts.txt'
 
 # Logo For script 
@@ -124,34 +124,11 @@ def login_accounts(email, password, captcha_token, proxy_url):
         linex()
         time.sleep(1)
 
-def handle_logins(credentials):
-    failed_logins = []
-
-    for email, password in credentials:
-        print(f"{Fore.YELLOW}Email: {email} {Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}Password: {password} {Style.RESET_ALL}")
-
-        captcha_token = get_token()
-        proxy_url = random.choice(read_proxy(PROXY_FILE))
-        response_data = login_accounts(email, password, captcha_token, proxy_url)
-
-        if response_data and response_data.get('msg') == 'Success':
-            auth_token = response_data['data']['token']
-            print(f"{Fore.GREEN}Login Successful! email: {email} | Auth Token: {auth_token}{Style.RESET_ALL}")
-            write_token(auth_token)
-            linex()
-        else:
-            print(f"{Fore.LIGHTRED_EX}Login failed for {email}{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}Reason: {response_data.get('msg')}{Style.RESET_ALL}")
-            failed_logins.append(f"{email}|{password}")
-
-    return failed_logins
-
 # Main function for processing full action
 def main():
     clear_screen()
 
-    credentials = read_credentials(ACCOUNT_FILE)
+    credentials = read_credentials(ACCOUNTS_FILE)
     failed_logins = []
 
     if os.path.exists(FAILED_ACCOUNTS_FILE):
@@ -171,6 +148,7 @@ def main():
         return None
 
     for email, password in credentials:
+        print(f"Processing account: {email}")
         print(f"{Fore.GREEN}Email: {email}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Password: {password}{Style.RESET_ALL}")
 
