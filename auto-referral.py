@@ -173,7 +173,7 @@ def main():
     linex()
     for ref in range(ref_amount):
         try:
-            print(f"{Fore.LIGHTGREEN_EX}Processing Referral... {str(ref+1)}/{str(ref_amount)}, Complete: {((ref+1) / ref_amount) * 100:.2f}%{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTWHITE_EX}Processing Referral... {str(ref+1)}/{str(ref_amount)}, Complete: {((ref+1) / ref_amount) * 100:.2f}%{Style.RESET_ALL}")
             
             domains = ["@gmail.com", "@outlook.com", "@yahoo.com", "@hotmail.com"]
             characters = string.ascii_letters + string.digits
