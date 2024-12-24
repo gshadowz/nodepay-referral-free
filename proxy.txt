@@ -1,5 +1,0 @@
-DELETE ALL OF THIS AS IT IS FOR EXAMPLE
-http://ip:port
-http://username:password@ip:port
-
-MAKE SURE YOUR PROXY IS 100% WORKING
