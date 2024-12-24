@@ -138,6 +138,11 @@ def main():
         print(f"{Fore.LIGHTYELLOW_EX}Detected {TOKEN_FILE} in current directory, will be deleted for new token{Style.RESET_ALL}")
         os.remove(TOKEN_FILE)
         linex()
+
+    if os.path.exists(FAILED_ACCOUNTS_FILE):
+        print(f"{Fore.LIGHTYELLOW_EX}Detected {FAILED_ACCOUNTS_FILE} in current directory, will be deleted for new failed accounts{Style.RESET_ALL}")
+        os.remove(FAILED_ACCOUNTS_FILE)
+        linex()
     
     if not credentials:
         print(f"{Fore.LIGHTRED_EX}No accounts found in accounts.txt{Style.RESET_ALL}")
@@ -146,7 +151,7 @@ def main():
         return None
 
     for index, (email, password) in enumerate(credentials, start=1):
-        print(f"Processing account: {email}, Total Account: {index}/{len(credentials)}")
+        print(f"{Fore.LIGHTWHITE_EX}Processing account: {email}, Total Account: {index}/{len(credentials)}{Style.RESET_ALL}")
 
         captcha_token = get_token()
         proxy_url = None
