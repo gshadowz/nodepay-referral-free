@@ -4,6 +4,17 @@
 
 # [Register Nodepay Here](https://app.nodepay.ai/register?ref=1XsOOpCNsHejnuP)
 
+# Good Proxy for Nodepay
+- [Cherry Proxy](https://center.cherryproxy.com/Login/Register?invite=gshadowz)
+- [922 Proxy](https://www.922proxy.com/register?inviter_code=gshadowz)
+- [ABC Proxy](https://www.abcproxy.com/?code=605NOU06)
+
+# Features
+- Get Token for Existing Nodepay Account
+- Fail Safe Mechanisnm, Put Failed Account Credential into File
+- Saving Credential and Token into different file
+- Better Logging Color
+
 # Requirements
 - Git
     ```bash
@@ -16,7 +27,7 @@
     ```
 
 # How to Use
-- Clone this Repository
+- Clone this Repository and change directory
     ```bash
     git clone https://github.com/gshadowz/nodepay-referral-free.git
     cd nodepay-referral-free
@@ -27,16 +38,27 @@
     pip install -r requirements.txt
     ```
 
-- Copy and Paste the JS Script in [Important Step](#important-step) to the Via Browser with picture below
+- Copy and Paste the JS Script in [Important Step](#important-step) to the [Via Browser](https://www.viayoo.com/en/)
+    
+- Open Via Browser, go to [Nodepay Login](https://app.nodepay.ai/login) And Run Captcha Solver for get captcha token
 
-⚠️ Open Via Browser And Run Captcha Solver for get captcha token
-```
-python app.py
-```
-✨ Open New Tab & Run The app
-```
-python script.py
-```
+- Then in the Termux, run
+    ```
+    python app.py
+    ```
+
+- After that open new session in Termux and run the main script. get-token is for getting nodepay token and auto-referral for auto referral using your referral code.
+    ```bash
+    python get-token.py
+    ```
+    or
+    ```bash
+    python auto-referral.py
+    ```
+
+- Wait until complete and enjoy your free auto referral.
+
+### **Note: For tutorial using video, you can visit this [youtube video](https://www.youtube.com/watch?v=4rVVzquI-pU)**
 
 # Important Step
 ### Captcha Solver JavaScript / use via 
@@ -116,3 +138,6 @@ python script.py
 })();
 
 ```
+
+# Source 
+https://github.com/nbprg/nodepay-referral
