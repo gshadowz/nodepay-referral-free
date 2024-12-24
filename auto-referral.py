@@ -11,6 +11,7 @@ init(autoreset=True)
 PROXY_FILE = 'proxy.txt'
 TOKEN_FILE = 'token_list.txt'
 ACCOUNTS_FILE = 'accounts.txt'
+FAILED_ACCOUNTS_FILE = 'failed_accounts.txt'
 
 logo = r"""
    _  __       __                      ___      ___                 __
@@ -63,6 +64,11 @@ def write_credentials(credentials):
 def write_token(token):
     with open(TOKEN_FILE, 'a') as file:
         file.write(f"{token}\n")
+
+def write_failed_accounts(failed_accounts):
+    with open(FAILED_ACCOUNTS_FILE, 'w') as file:
+        for account in failed_accounts:
+            file.write(f"{account}\n")
 
 def get_ip(proxy_url):
     proxy = {'http': proxy_url,'https': proxy_url}
@@ -152,11 +158,17 @@ def main():
     proxy = read_proxy(PROXY_FILE)
     success = 0
     fail = 0
+    failed_logins = []
     clear_screen()
 
     if os.path.exists(TOKEN_FILE):
         print(f"{Fore.LIGHTYELLOW_EX}Detected {TOKEN_FILE} in current directory, will be deleted for new token{Style.RESET_ALL}")
         os.remove(TOKEN_FILE)
+        linex()
+
+    if os.path.exists(FAILED_ACCOUNTS_FILE):
+        print(f"{Fore.LIGHTYELLOW_EX}Detected {FAILED_ACCOUNTS_FILE} in current directory, will be deleted for new failed accounts{Style.RESET_ALL}")
+        os.remove(FAILED_ACCOUNTS_FILE)
         linex()
 
     ref_amount = int(input(f'{Fore.LIGHTCYAN_EX}>> Input Your Reff Amount: {Style.RESET_ALL}'))
@@ -173,7 +185,7 @@ def main():
     linex()
     for ref in range(ref_amount):
         try:
-            print(f"{Fore.LIGHTGREEN_EX}Processing Referral... {str(ref+1)}/{str(ref_amount)}, Complete: {((ref+1) / ref_amount) * 100:.2f}%{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTWHITE_EX}Processing Referral... {str(ref+1)}/{str(ref_amount)}, Complete: {((ref+1) / ref_amount) * 100:.2f}%{Style.RESET_ALL}")
             
             domains = ["@gmail.com", "@outlook.com", "@yahoo.com", "@hotmail.com"]
             characters = string.ascii_letters + string.digits
@@ -205,10 +217,12 @@ def main():
                         linex()
                     else:
                         print(f"{Fore.LIGHTRED_EX}Error: {response['msg']}{Style.RESET_ALL}")
+                        failed_logins.append(f"{email}|{password}")
                         fail += 1
                         linex()
                 else:
                     print(f"{Fore.LIGHTRED_EX}Error: {response['msg']}{Style.RESET_ALL}")
+                    failed_logins.append(f"{email}|{password}")
                     fail += 1
                     linex()
             else:
@@ -221,10 +235,16 @@ def main():
             fail += 1
             linex()
 
+    if failed_logins:
+        print(f"{Fore.LIGHTRED_EX}Saving Failed Login credentials into {FAILED_ACCOUNTS_FILE}.{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTWHITE_EX}Please login manually to activate accounts.{Style.RESET_ALL}")
+        write_failed_accounts(failed_logins)
+        
+
     print(f"{Fore.LIGHTGREEN_EX}Referral Completed!{Style.RESET_ALL}\n")
 
-    print(f"{Fore.LIGHTGREEN_EX}All Account Credentials is Saved into {ACCOUNTS_FILE}{Style.RESET_ALL}")
-    print(f"{Fore.LIGHTGREEN_EX}All Account Token is Saved into {TOKEN_FILE}\n{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTGREEN_EX}All Account Credentials is Saved into {ACCOUNTS_FILE}.{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTGREEN_EX}All Account Token is Saved into {TOKEN_FILE}.\n{Style.RESET_ALL}")
 
     print(f"{Fore.LIGHTGREEN_EX}Total Success: {success}{Style.RESET_ALL}")
     print(f"{Fore.LIGHTRED_EX}Total Failed: {fail}{Style.RESET_ALL}")
