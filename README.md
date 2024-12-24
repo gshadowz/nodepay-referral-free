@@ -37,7 +37,12 @@
     ```bash
     pip install -r requirements.txt
     ```
-
+    
+- Make Proxy file, the format of proxy is 'http:username:password@hostname:port'
+    ```bash
+    nano proxy.txt
+    ```
+    
 - Copy and Paste the JS Script in [Important Step](#important-step) to the [Via Browser](https://www.viayoo.com/en/)
     
 - Open Via Browser, go to [Nodepay Login](https://app.nodepay.ai/login) And Run Captcha Solver for get captcha token
